@@ -1,5 +1,20 @@
 # DatabaseClone
 
+## Компиляция Database
+```
+make && rm main.o
+```
+
+## Запуск Database
+```
+./Database
+```
+
+## Подключение по TCP
+```
+telnet localhost 7432
+```
+
 ## Просмотр данный (Рабочий пример)
 ```
 SELECT cars.Make cars.Model FROM cars WHERE cars.Year = '2022' AND cars.Price = '42000'
@@ -15,16 +30,11 @@ DELETE FROM cars WHERE cars.Year = '2022'
 INSERT INTO cars VALUES ('Toyota', 'Civic','2024','22000')
 ```
 
+## Выход из программы
+```
+exit
+```
 
-## Компиляция Database
-```
-make && rm main.o
-```
-
-## Запуск Database
-```
-./Database
-```
 
 
 
