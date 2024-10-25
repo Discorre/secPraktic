@@ -128,7 +128,7 @@ TV GetMap(const MyHashMap<TK, TV>& map, const TK& key, int clientSocket) {
     }
 
     //throw std::runtime_error("Ключ не найден");  // Выбрасываем ошибку, если ключ не найден
-    sendToClient(clientSocket, "Ключ не найден");
+    sendToClient(clientSocket, "Ключ не найден\n");
 }
 
 // Удаление элементов
@@ -152,7 +152,7 @@ void DeleteMap(MyHashMap<TK, TV>& map, const TK& key, int clientSocket) {
         curr = curr->next;
     }
     //throw std::runtime_error("Ключ не найден");  // Выбрасываем ошибку, если ключ не найден
-    sendToClient(clientSocket, "Ключ не найден");
+    sendToClient(clientSocket, "Ключ не найден\n");
 }
 
 // Очистка памяти

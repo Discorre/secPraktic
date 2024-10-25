@@ -38,7 +38,7 @@ std::string SanitizeText(std::string str, int clientSocket) {
         return str;
     } else {
         //throw std::runtime_error("Неверный синтаксис в WHERE " + str);  // Выбрасываем ошибку, если синтаксис неверный
-        sendToClient(clientSocket, "Неверный синтаксис в WHERE " + str);
+        sendToClient(clientSocket, "Неверный синтаксис в WHERE " + str + "\n");
     }
 }
 
@@ -119,13 +119,13 @@ bool isValidRow(Node* node, const MyVector<std::string>& row, const MyHashMap<st
             }
         } catch (const std::exception& e) {
             //std::cerr << e.what() << ": Tаблица " << part1Splitted->data[0] << " отсутствует" << std::endl;  // Выводим ошибку, если таблица отсутствует
-            sendToClient(clientSocket, "Tаблица " + part1Splitted->data[0] + " отсутствует");
+            sendToClient(clientSocket, "Tаблица " + part1Splitted->data[0] + " отсутствует" + "\n");
             return false;
         }
 
         if (columnIndex == -1) {
             //std::cerr << "Столбец " << part1Splitted->data[1] << " отсутствует в таблице " << part1Splitted->data[0] << std::endl;  // Выводим ошибку, если столбец отсутствует
-            sendToClient(clientSocket, "Столбец " + part1Splitted->data[1] + " отсутствует в таблице " + part1Splitted->data[0]);
+            sendToClient(clientSocket, "Столбец " + part1Splitted->data[1] + " отсутствует в таблице " + part1Splitted->data[0] + "\n");
             return false;
         }
 

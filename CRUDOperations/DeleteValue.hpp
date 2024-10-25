@@ -26,10 +26,11 @@ inline void removeData(MyVector<string>& namesOfTable, MyVector<string>& listOfC
 
         // Блокируем таблицу для исключения конфликтов при записи
         try {
-            CheckTableLock(path + "/" + nameOfSchema + "/" + namesOfTable.data[i], namesOfTable.data[i] + "_lock.txt", 1);
+            CheckTableLock(path + "/" + nameOfSchema + "/" + namesOfTable.data[i], namesOfTable.data[i] + "_lock.txt", 1, clientSocket);
         } catch (const std::exception& e) {
             //cerr << err.what() << endl;
             sendToClient(clientSocket, e.what());
+            sendToClient(clientSocket, "\n");
             return;
         }
 
@@ -38,7 +39,7 @@ inline void removeData(MyVector<string>& namesOfTable, MyVector<string>& listOfC
             ifstream file(path + "/" + nameOfSchema + "/" + namesOfTable.data[i] + "/" + to_string(fileIndex) + ".csv");
             if (!file.is_open()) {
                 //throw runtime_error("Ошибка открытия: " + (path + "/" + nameOfSchema + "/" + namesOfTable.data[i] + "/" + to_string(fileIndex) + ".csv"));
-                sendToClient(clientSocket, "Ошибка открытия: " + (path + "/" + nameOfSchema + "/" + namesOfTable.data[i] + "/" + to_string(fileIndex) + ".csv"));
+                sendToClient(clientSocket, "Ошибка открытия: " + (path + "/" + nameOfSchema + "/" + namesOfTable.data[i] + "/" + to_string(fileIndex) + ".csv") + "\n");
             }
 
             // Создаем временный файл для записи отфильтрованных данных
@@ -60,6 +61,7 @@ inline void removeData(MyVector<string>& namesOfTable, MyVector<string>& listOfC
                 } catch (const exception& e) {
                     //cerr << e.what() << endl;
                     sendToClient(clientSocket, e.what());
+                    sendToClient(clientSocket, "\n");
                     tempFile.close();
                     file.close();
                     std::remove((path + "/" + nameOfSchema + "/" + namesOfTable.data[i] + "/" + to_string(fileIndex) + "_temp.csv").c_str());
@@ -75,12 +77,12 @@ inline void removeData(MyVector<string>& namesOfTable, MyVector<string>& listOfC
             // Удаляем исходный файл и переименовываем временный файл
             if (std::remove((path + "/" + nameOfSchema + "/" + namesOfTable.data[i] + "/" + to_string(fileIndex) + ".csv").c_str()) != 0) {
                 //std::cerr << "Ошибка удаления файла" << std::endl;
-                sendToClient(clientSocket, "Ошибка удаления файла");
+                sendToClient(clientSocket, "Ошибка удаления файла\n");
                 return;
             }
             if (std::rename((path + "/" + nameOfSchema + "/" + namesOfTable.data[i] + "/" + to_string(fileIndex) + "_temp.csv").c_str(), (path + "/" + nameOfSchema + "/" + namesOfTable.data[i] + "/" + to_string(fileIndex) + ".csv").c_str()) != 0) {
                 //std::cerr << "Ошибка присвоения названия файлу" << std::endl;
-                sendToClient(clientSocket, "Ошибка удаления файла");
+                sendToClient(clientSocket, "Ошибка удаления файла\n");
                 return;
             }
 
@@ -88,7 +90,7 @@ inline void removeData(MyVector<string>& namesOfTable, MyVector<string>& listOfC
         }
 
         // Разблокируем таблицу
-        CheckTableLock(path + "/" + nameOfSchema + "/" + namesOfTable.data[i], namesOfTable.data[i] + "_lock.txt", 0);
+        CheckTableLock(path + "/" + nameOfSchema + "/" + namesOfTable.data[i], namesOfTable.data[i] + "_lock.txt", 0, clientSocket);
     }
 }
 
@@ -122,7 +124,7 @@ void parseDelete(const MyVector<string>& words, const string& filePath, const st
                 GetMap(jsonStructure, words.data[i], clientSocket);
             } catch (const exception& err) {
                 //cerr << err.what() << ": таблица " << words.data[i] << " отсутствует." << endl;
-                sendToClient(clientSocket, "Таблица " + words.data[i] + " отсутствует.");
+                sendToClient(clientSocket, "Таблица " + words.data[i] + " отсутствует." + "\n");
                 return;
             }
             AddVector<string>(*namesOfTable, words.data[i]);
@@ -132,7 +134,7 @@ void parseDelete(const MyVector<string>& words, const string& filePath, const st
     // Проверяем, что указаны и таблицы, и условия
     if (countTabNames == 0 || countWereData == 0) {
         //throw runtime_error("Отсутствует имя таблицы или данные в WHERE");
-        sendToClient(clientSocket, "Отсутствует имя таблицы или данные в WHERE");
+        sendToClient(clientSocket, "Отсутствует имя таблицы или данные в WHERE\n");
     }
 
     // Вызываем функцию для удаления данных
@@ -141,6 +143,7 @@ void parseDelete(const MyVector<string>& words, const string& filePath, const st
     } catch (const exception& e) {
         //cerr << e.what()<< endl;
         sendToClient(clientSocket, e.what());
+        sendToClient(clientSocket, "\n");
         return;
     }
 }

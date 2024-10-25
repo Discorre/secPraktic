@@ -28,7 +28,7 @@ string CleanText(string& str, int clientSocket) {
         return str;
     } else {
         //throw runtime_error("Неверный синтаксис в VALUES " + str);
-        sendToClient(clientSocket, "Неверный синтаксис в VALUES " + str);
+        sendToClient(clientSocket, "Неверный синтаксис в VALUES " + str + "\n");
     }
 }
 
@@ -38,7 +38,7 @@ void Validate(int colLen, const MyVector<string>& namesOfTable, const MyHashMap<
         MyVector<string>* temp = GetMap<string, MyVector<string>*>(jsonStructure, namesOfTable.data[i], clientSocket);
         if (temp->length != colLen) {
             //throw runtime_error("Количество аргументов не равно столбцам в " + namesOfTable.data[i]);
-            sendToClient(clientSocket, "Количество аргументов не равно столбцам в " + namesOfTable.data[i]);
+            sendToClient(clientSocket, "Количество аргументов не равно столбцам в " + namesOfTable.data[i] + "\n");
         }
     }
 }
@@ -48,7 +48,7 @@ int readPrKey(const string& path, const bool rec, const int newID, int clientSoc
     fstream pkFile(path);
     if (!pkFile.is_open()) {
         //throw runtime_error("Не удалось открыть " + path);
-        sendToClient(clientSocket, "Не удалось открыть " + path);
+        sendToClient(clientSocket, "Не удалось открыть " + path + "\n");
     }
     int lastID = 0;
     if (rec) {
@@ -65,11 +65,12 @@ void insertRows(MyVector<MyVector<string>*>& addNewData, MyVector<string>& names
     for (int i = 0; i < namesOfTable.length; i++) {
         int lastID = 0;
         try {
-            CheckTableLock(filePath + "/" + nameOfSchema + "/" + namesOfTable.data[i], namesOfTable.data[i] + "_lock.txt", 1);
+            CheckTableLock(filePath + "/" + nameOfSchema + "/" + namesOfTable.data[i], namesOfTable.data[i] + "_lock.txt", 1, clientSocket);
             lastID = readPrKey(filePath + "/" + nameOfSchema + "/" + namesOfTable.data[i] + "/" + namesOfTable.data[i] + "_pk_sequence.txt", false, 0, clientSocket);
         } catch (const std::exception& e) {
             //cerr << e.what() << endl;
             sendToClient(clientSocket, e.what());
+            sendToClient(clientSocket, "\n");
             //return;
         }
 
@@ -85,7 +86,7 @@ void insertRows(MyVector<MyVector<string>*>& addNewData, MyVector<string>& names
             fstream csvFile(tempPath, ios::app);
             if (!csvFile.is_open()) {
                 //throw runtime_error("Не удалось открыть " + tempPath);
-                sendToClient(clientSocket, "Не удалось открыть " + tempPath);
+                sendToClient(clientSocket, "Не удалось открыть " + tempPath + "\n");
             }
             csvFile << endl << newID;
             for (int k = 0; k < addNewData.data[j]->length; k++) {
@@ -94,7 +95,7 @@ void insertRows(MyVector<MyVector<string>*>& addNewData, MyVector<string>& names
             csvFile.close();
         }
         readPrKey(filePath + "/" + nameOfSchema + "/" + namesOfTable.data[i] + "/" + namesOfTable.data[i] + "_pk_sequence.txt", true, newID, clientSocket);
-        CheckTableLock(filePath + "/" + nameOfSchema + "/" + namesOfTable.data[i], namesOfTable.data[i] + "_lock.txt", 0);
+        CheckTableLock(filePath + "/" + nameOfSchema + "/" + namesOfTable.data[i], namesOfTable.data[i] + "_lock.txt", 0, clientSocket);
     }
 }
 
@@ -123,6 +124,7 @@ void parseInsert(const MyVector<string>& slovs, const string& filePath, const st
                     } catch (const exception& e) {
                         //cerr << e.what() << " " << slovs.data[i] << endl;
                         sendToClient(clientSocket, e.what());
+                        sendToClient(clientSocket, "\n");
                         //return;
                     }
 
@@ -136,6 +138,7 @@ void parseInsert(const MyVector<string>& slovs, const string& filePath, const st
                 } catch (const exception& e) {
                     //cerr << e.what() << endl;
                     sendToClient(clientSocket, e.what());
+                    sendToClient(clientSocket, "\n");
                     //return;
                 }
                 AddVector<MyVector<string>*>(*dataToInsert, tempData);
@@ -147,7 +150,7 @@ void parseInsert(const MyVector<string>& slovs, const string& filePath, const st
                 GetMap(jsonStructure, slovs.data[i], clientSocket);
             } catch (const exception& err) {
                 //cerr << e.what() << ": Таблица " << slovs.data[i] << " отсутствует" << endl;
-                sendToClient(clientSocket, "Таблица " + slovs.data[i] + " отсутствует");
+                sendToClient(clientSocket, "Таблица " + slovs.data[i] + " отсутствует" + "\n");
                 //return;
             }
             AddVector<string>(*targetTables, slovs.data[i]);
@@ -155,7 +158,7 @@ void parseInsert(const MyVector<string>& slovs, const string& filePath, const st
     }
     if (countOfTable == 0 || dataCount == 0) {
         //throw runtime_error("Отсутствует имя таблицы или данные в VALUES");
-        sendToClient(clientSocket, "Отсутствует имя таблицы или данные в VALUES");
+        sendToClient(clientSocket, "Отсутствует имя таблицы или данные в VALUES\n");
     }
 
     try {
@@ -163,6 +166,7 @@ void parseInsert(const MyVector<string>& slovs, const string& filePath, const st
     } catch (const exception& e) {
         //cerr << e.what() << endl;
         sendToClient(clientSocket, e.what());
+        sendToClient(clientSocket, "\n");
         //return;
     }
 }

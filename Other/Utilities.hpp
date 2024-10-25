@@ -72,7 +72,7 @@ MyVector<string>* splitRow(const string &str, char delim) {
 }
 
 // Проверка на занятость таблицы другим пользователем
-void CheckTableLock(const string& path, const string& fileName, const int rank) {
+void CheckTableLock(const string& path, const string& fileName, const int rank, int clientSocket) {
     fstream lockFile(path + "/" + fileName);
     if (!lockFile.is_open()) {
         throw runtime_error("Не удалось открыть " + (path + "/" + fileName));  // Выбрасываем ошибку, если не удалось открыть файл
@@ -81,7 +81,8 @@ void CheckTableLock(const string& path, const string& fileName, const int rank) 
     lockFile >> lock;  // Читаем текущее состояние блокировки
     if (lock == 1 && rank == 1) {
         lockFile.close();
-        throw runtime_error("Таблица " + fileName + " заблокирована другим процессом");  // Выбрасываем ошибку, если таблица заблокирована
+        //throw runtime_error("Таблица " + fileName + " заблокирована другим процессом");  // Выбрасываем ошибку, если таблица заблокирована
+        sendToClient(clientSocket, "Таблица " + fileName + " заблокирована другим процессом\n");
     } else {
         lockFile << rank;  // Устанавливаем новое состояние блокировки
     }

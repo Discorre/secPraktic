@@ -21,7 +21,7 @@ MyVector<MyVector<string>*>* ReadTable(const string& namesOfTable, const string&
     int indexFile = 1;
     try {
         // Блокировка таблицы для чтения
-        CheckTableLock(pathFile + "/" + namesOfSchema + "/" + namesOfTable, namesOfTable + "_lock.txt", 1);
+        CheckTableLock(pathFile + "/" + namesOfSchema + "/" + namesOfTable, namesOfTable + "_lock.txt", 1, clientSocket);
     } catch (const std::exception& e) {
         // Вывод ошибки, если не удалось заблокировать таблицу
         //cerr << e.what() << endl;
@@ -37,7 +37,7 @@ MyVector<MyVector<string>*>* ReadTable(const string& namesOfTable, const string&
         if (!file.is_open()) {
             // Выброс исключения, если файл не открылся
             //throw runtime_error("Ошибка открытия файла" + (pathFile + "/" + namesOfSchema + "/" + namesOfTable + "/" + to_string(indexFile) + ".csv"));
-            sendToClient(clientSocket, "Ошибка открытия файла" + (pathFile + "/" + namesOfSchema + "/" + namesOfTable + "/" + to_string(indexFile) + ".csv"));
+            sendToClient(clientSocket, "Ошибка открытия файла" + (pathFile + "/" + namesOfSchema + "/" + namesOfTable + "/" + to_string(indexFile) + ".csv" + "\n"));
         }
         string firstLine;
         // Чтение первой строки файла (заголовка)
@@ -62,6 +62,7 @@ MyVector<MyVector<string>*>* ReadTable(const string& namesOfTable, const string&
                         // Вывод ошибки и закрытие файла
                         //cerr << e.what() << endl;
                         sendToClient(clientSocket, e.what());
+                        sendToClient(clientSocket, "\n");
                         file.close();
                         return dataOfTable;
                     }
@@ -106,6 +107,7 @@ MyVector<MyVector<string>*>* ReadTable(const string& namesOfTable, const string&
                         // Вывод ошибки и закрытие файла
                         //cerr << e.what() << endl;
                         sendToClient(clientSocket, e.what());
+                        sendToClient(clientSocket, "\n");
                         file.close();
                         return dataOfTable;
                     }
@@ -126,7 +128,7 @@ MyVector<MyVector<string>*>* ReadTable(const string& namesOfTable, const string&
         indexFile += 1;
     }
     // Разблокировка таблицы
-    CheckTableLock(pathFile + "/" + namesOfSchema + "/" + namesOfTable, namesOfTable + "_lock.txt", 1);
+    CheckTableLock(pathFile + "/" + namesOfSchema + "/" + namesOfTable, namesOfTable + "_lock.txt", 1, clientSocket);
     // Возврат данных таблицы
     return dataOfTable;
 }
@@ -175,7 +177,7 @@ void selectDataPreparation(const MyVector<string>& namesOfColumns, const MyVecto
                     GetMap(jsonStructure, splitnamesOfColumns->data[0], clientSocket);
                 } catch (const exception& e) {
                     //cerr << e.what() << ": Tаблица " << splitnamesOfColumns->data[0] << " отсутствует" << endl;
-                    sendToClient(clientSocket, "Tаблица " + splitnamesOfColumns->data[0] + " отсутствует");
+                    sendToClient(clientSocket, "Tаблица " + splitnamesOfColumns->data[0] + " отсутствует" + "\n");
                     return;
                 }
                 if (splitnamesOfColumns->data[0] == namesOfTables.data[i]) {
@@ -224,7 +226,7 @@ void parseSelect(const MyVector<string>& words, const string& pathFile, const st
                 GetMap(jsonStructure, words.data[i], clientSocket);
             } catch (const exception& e) {
                 //cerr << e.what() << ": Tаблица " << words.data[i] << " отсутствует" << endl;
-                sendToClient(clientSocket, "Tаблица " + words.data[i] + " отсутствует");
+                sendToClient(clientSocket, "Tаблица " + words.data[i] + " отсутствует" + '\n');
                 return;
             }
             // Добавление имени таблицы в список
