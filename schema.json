@@ -1,0 +1,9 @@
+{
+  "name": "BigStore",
+  "tuples_limit":  30,
+  "structure": {
+    "beer": ["Name", "Type", "Brewery", "Country"],
+    "cars": ["Make", "Model", "Year", "Price"],
+    "test": ["col1", "col2"]
+  }
+}
