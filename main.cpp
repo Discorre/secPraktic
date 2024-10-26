@@ -7,12 +7,12 @@
 #include <cstring>
 #include <filesystem>
 
-
 #include "CustomStructures/MyVector.hpp"
 #include "CustomStructures/MyHashMap.hpp"
 
 #include "Other/JsonParser.hpp"
 #include "Other/Utilities.hpp"
+
 #include "CRUDOperations/SelectValue.hpp"
 #include "CRUDOperations/InsertValue.hpp"
 #include "CRUDOperations/DeleteValue.hpp"
@@ -56,17 +56,6 @@ void parsingQuery(const string& query, const string& filePath, const string& nam
         //cout << "Неизвестная команда" << endl;  // Выводим сообщение, если команда не распознана
         sendToClient(clientSocket, "Неизвестная команда\n");
     }
-}
-
-// Функция для обрезки пробелов из начала и конца строки
-std::string removeTabs(const std::string& str) {
-    std::string result;
-    for (char ch : str) {
-        if (ch != '\t') { // Если символ не табуляция
-            result += ch; // Добавляем его в результат
-        }
-    }
-    return result;
 }
 
 void handleClient(int clientSocket, std::string filePath, std::string namesOfSchema, int limitOfTuples, MyHashMap<std::string, MyVector<std::string>*> &jsonStructure) {
