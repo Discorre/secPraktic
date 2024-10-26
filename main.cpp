@@ -2,7 +2,6 @@
 #include <string>
 #include <thread>
 #include <mutex>
-#include <vector>
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <cstring>
@@ -52,7 +51,7 @@ void parsingQuery(const string& query, const string& filePath, const string& nam
         
     } else { 
         //cout << "Неизвестная команда" << endl;  // Выводим сообщение, если команда не распознана
-        sendToClient(clientSocket, "Неизвестная команда");
+        sendToClient(clientSocket, "Неизвестная команда\n");
     }
 }
 
@@ -115,13 +114,6 @@ int InputNames(string& jsonFileName, string& filePath) {
 }
 
 int main() {
-    std::string jsonFileName = "schema.json";
-    std::string filePath = ".";
-    MyHashMap<std::string, MyVector<std::string>*>* jsonStructure = CreateMap<std::string, MyVector<std::string>*>(10, 50);
-
-    // Чтение структуры JSON
-    int limitOfTuples = 0;
-    std::string namesOfSchema = readJsonFile(jsonFileName, filePath, limitOfTuples, *jsonStructure);
 
     int serverSocket, clientSocket;
     struct sockaddr_in serverAddress;
@@ -158,6 +150,14 @@ int main() {
     }
 
     std::cout << "Server listening on port 7432..." << std::endl;
+
+    std::string jsonFileName = "schema.json";
+    std::string filePath = ".";
+    MyHashMap<std::string, MyVector<std::string>*>* jsonStructure = CreateMap<std::string, MyVector<std::string>*>(10, 50, clientSocket);
+
+    // Чтение структуры JSON
+    int limitOfTuples = 0;
+    std::string namesOfSchema = readJsonFile(jsonFileName, filePath, limitOfTuples, *jsonStructure, clientSocket);
 
     // Цикл для принятия новых соединений
     while (true) {

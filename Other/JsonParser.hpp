@@ -22,7 +22,7 @@ void createDirectory(const string& pathToDir) {
 }
 
 // Создание файла с данными
-void createFileData(const string& pathToFile, const string& fileName, const string& data, bool isDirectory) {
+void createFileData(const string& pathToFile, const string& fileName, const string& data, bool isDirectory, int clientSocket) {
     filesystem::path path(pathToFile);
     if (filesystem::exists(path / fileName)) {
         if (isDirectory) {
@@ -44,17 +44,17 @@ void createFileData(const string& pathToFile, const string& fileName, const stri
         lockFile << data;  // Записываем данные в файл
         lockFile.close();
     } else {
-        throw runtime_error("Не удалось создать файл блокировки в директории");  // Выбрасываем ошибку, если не удалось создать файл
-        //sendToClient(clientSocket, "Не удалось создать файл блокировки в директории");
+        //throw runtime_error("Не удалось создать файл блокировки в директории");  // Выбрасываем ошибку, если не удалось создать файл
+        sendToClient(clientSocket, "Не удалось создать файл блокировки в директории");
     }
 }
 
 // Чтение json файла и создание директорий
-string readJsonFile(const string& fileName, const string& filePath, int& tuplesLimit, MyHashMap<string, MyVector<string>*>& jsonStructure) {
+string readJsonFile(const string& fileName, const string& filePath, int& tuplesLimit, MyHashMap<string, MyVector<string>*>& jsonStructure, int clientSocket) {
     ifstream file(filePath + "/" + fileName);
     if (!file.is_open()) {
-        throw runtime_error("Не удалось открыть " + fileName);  // Выбрасываем ошибку, если не удалось открыть файл
-        //sendToClient(clientSocket, "Не удалось открыть " + fileName);
+        //throw runtime_error("Не удалось открыть " + fileName);  // Выбрасываем ошибку, если не удалось открыть файл
+        sendToClient(clientSocket, "Не удалось открыть " + fileName);
     }
 
     // Чтение json
@@ -81,9 +81,9 @@ string readJsonFile(const string& fileName, const string& filePath, int& tuplesL
             colNames += temp;
             AddVector(*tempValue, temp);  // Добавляем имя столбца в вектор
         }
-        createFileData(schemaName + "/" + key, "1.csv", colNames, true);  // Создаем файл с именами столбцов
-        createFileData(schemaName + "/" + key, key + "_lock.txt", "0", false);  // Создаем файл блокировки
-        createFileData(schemaName + "/" + key, key + "_pk_sequence.txt", "0", false);  // Создаем файл последовательности первичных ключей
+        createFileData(schemaName + "/" + key, "1.csv", colNames, true, clientSocket);  // Создаем файл с именами столбцов
+        createFileData(schemaName + "/" + key, key + "_lock.txt", "0", false, clientSocket);  // Создаем файл блокировки
+        createFileData(schemaName + "/" + key, key + "_pk_sequence.txt", "0", false, clientSocket);  // Создаем файл последовательности первичных ключей
         AddMap<string, MyVector<string>*>(jsonStructure, key, tempValue);  // Добавляем структуру таблицы в хэш-таблицу
     }
 
