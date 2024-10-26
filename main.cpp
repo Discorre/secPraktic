@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <cstring>
 #include <filesystem>
+#include <pwd.h>
 
 #include "CustomStructures/MyVector.hpp"
 #include "CustomStructures/MyHashMap.hpp"
@@ -58,10 +59,34 @@ void parsingQuery(const string& query, const string& filePath, const string& nam
     }
 }
 
+// Функция для получения имени пользователя
+std::string getUsername() {
+    struct passwd *pw = getpwuid(getuid());
+    return pw ? std::string(pw->pw_name) : "Unknown";
+}
+
+// Функция для получения имени хоста
+std::string getHostname() {
+    char hostname[256];
+    if (gethostname(hostname, sizeof(hostname)) == 0) {
+        return std::string(hostname);
+    }
+    return "Unknown";
+}
+
 void handleClient(int clientSocket, std::string filePath, std::string namesOfSchema, int limitOfTuples, MyHashMap<std::string, MyVector<std::string>*> &jsonStructure) {
     char buffer[1024] = {0};
 
+    // Получаем имя пользователя и имя хоста
+    std::string username = getUsername();
+    std::string hostname = getHostname();
+
     while (true) {
+
+        // Отправляем приглашение с именем пользователя и хоста
+        std::string prompt = username + "@" + hostname + "# ";
+        sendToClient(clientSocket, prompt);
+
         int bytesRead = read(clientSocket, buffer, 1024);
         if (bytesRead <= 0) break;
 
@@ -71,6 +96,7 @@ void handleClient(int clientSocket, std::string filePath, std::string namesOfSch
 
         if (query == "exit") {
             std::cout << "Client disconnected." << std::endl;
+            sendToClient(clientSocket, "exit\n");
             break;
         }
 
