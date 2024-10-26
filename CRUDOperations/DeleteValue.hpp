@@ -123,7 +123,7 @@ void parseDelete(const MyVector<string>& words, const string& filePath, const st
             try {
                 GetMap(jsonStructure, words.data[i], clientSocket);
             } catch (const exception& err) {
-                //cerr << err.what() << ": таблица " << words.data[i] << " отсутствует." << endl;
+                //cerr << e.what() << ": таблица " << words.data[i] << " отсутствует." << endl;
                 sendToClient(clientSocket, "Таблица " + words.data[i] + " отсутствует." + "\n");
                 return;
             }

@@ -45,7 +45,7 @@ void createFileData(const string& pathToFile, const string& fileName, const stri
         lockFile.close();
     } else {
         //throw runtime_error("Не удалось создать файл блокировки в директории");  // Выбрасываем ошибку, если не удалось создать файл
-        sendToClient(clientSocket, "Не удалось создать файл блокировки в директории");
+        sendToClient(clientSocket, "Не удалось создать файл блокировки в директории\n");
     }
 }
 
@@ -54,7 +54,7 @@ string readJsonFile(const string& fileName, const string& filePath, int& tuplesL
     ifstream file(filePath + "/" + fileName);
     if (!file.is_open()) {
         //throw runtime_error("Не удалось открыть " + fileName);  // Выбрасываем ошибку, если не удалось открыть файл
-        sendToClient(clientSocket, "Не удалось открыть " + fileName);
+        sendToClient(clientSocket, "Не удалось открыть " + fileName + "\n");
     }
 
     // Чтение json

@@ -39,7 +39,7 @@ template <typename TK, typename TV>
 MyHashMap<TK, TV>* CreateMap(int initCapacity, int initLoadFactor, int clientSocket) {
     if (initCapacity <= 0 || initLoadFactor <= 0 || initLoadFactor > 100) {
         //throw std::runtime_error("Индекс вне диапазона");  // Выбрасываем ошибку, если параметры некорректны
-        sendToClient(clientSocket, "Индекс вне диапазона");
+        sendToClient(clientSocket, "Индекс вне диапазона\n");
     }
 
     MyHashMap<TK, TV>* map = new MyHashMap<TK, TV>;  // Создаем новую хэш-таблицу

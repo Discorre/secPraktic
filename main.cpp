@@ -30,6 +30,7 @@ void parsingQuery(const string& query, const string& filePath, const string& nam
         } catch (const exception& e) {
             //cerr << e.what() << endl;  // Выводим ошибку, если она возникла
             sendToClient(clientSocket, e.what());
+            sendToClient(clientSocket, "\n");
         }
     
     } else if (words->data[0] == "INSERT" && words->data[1] == "INTO") {
@@ -38,6 +39,7 @@ void parsingQuery(const string& query, const string& filePath, const string& nam
         } catch (const exception& e) {
             //cerr << e.what() << endl;  // Выводим ошибку, если она возникла
             sendToClient(clientSocket, e.what());
+            sendToClient(clientSocket, "\n");
 
         }
     
@@ -47,6 +49,7 @@ void parsingQuery(const string& query, const string& filePath, const string& nam
         } catch (const exception& e) {
             //cerr << e.what() << endl;  // Выводим ошибку, если она возникла
             sendToClient(clientSocket, e.what());
+            sendToClient(clientSocket, "\n");
         }
         
     } else { 

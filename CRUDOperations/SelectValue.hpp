@@ -26,6 +26,7 @@ MyVector<MyVector<string>*>* ReadTable(const string& namesOfTable, const string&
         // Вывод ошибки, если не удалось заблокировать таблицу
         //cerr << e.what() << endl;
         sendToClient(clientSocket, e.what());
+        sendToClient(clientSocket, "\n");
         return dataOfTable;
     }
     // Получение дерева условий для whereValue
