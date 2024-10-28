@@ -12,12 +12,12 @@ using namespace std;
 
 
 // Функция для форматирования и отправки данных
-void formatAndSendData(int clientSocket, const MyVector<std::string>& headers) {
+void formatAndSendData(int clientSocket, const MyVector<std::string>& data1) {
     std::string message;
 
-    // Форматируем заголовки
-    for (size_t i = 0; i < headers.length; ++i) {
-        message += headers.data[i] + std::string(20 - headers.data[i].size(), ' '); // Выравниваем заголовки по 25 символов
+    // Форматируем
+    for (size_t i = 0; i < data1.length; ++i) {
+        message += data1.data[i] + std::string(20 - data1.data[i].size(), ' '); // Выравниваем по 20 символов
     }
     message += "\n"; // Переход на новую строку
 

@@ -136,7 +136,6 @@ MyVector<MyVector<string>*>* ReadTable(const string& namesOfTable, const string&
 
 // Вывод содержимого таблиц в виде декартового произведения
 void CartesianProduct(const MyVector<MyVector<MyVector<string>*>*>& tablesData, MyVector<MyVector<string>*>& temp, int counterTab, int tab, int clientSocket) {
-    //std::cout << std::setw(25);
     // Цикл по всем строкам текущей таблицы
     for (int i = 0; i < tablesData.data[counterTab]->length; i++) {
         // Добавление текущей строки в временный вектор
